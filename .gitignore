@@ -6,22 +6,13 @@
 # Rust workspace build output
 /target/
 
-# Linux AppImage
-/app/AppDir
-/app/appimage-build
-
 .refena_inspector/
 
+# Local signing secrets (keystore + key.properties live here for local release builds)
 /secrets
 
 # FVM Version Cache
 .fvm/
-
-# macOS
-.DS_Store
-
-# Generated at build time by makepri (see support/scripts/compile_windows_msix_helper.ps1)
-/support/build/msix/content/resources.pri
 
 # Devin prompt system + per-project knowledge layer (private, never pushed)
 .devin/
