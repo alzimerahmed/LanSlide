@@ -243,7 +243,8 @@
     "destination": "@:settingsTab.receive.destination",
     "appDirectory": "(LocalSend-Ordner)",
     "saveToGallery": "@:settingsTab.receive.saveToGallery",
-    "saveToGalleryOff": "Aufgrund von Ordnern automatisch ausgeschaltet."
+    "saveToGalleryOff": "Aufgrund von Ordnern automatisch ausgeschaltet.",
+    "saveToGalleryHint": "Fotos und Videos werden in deiner Galerie gespeichert; andere Dateien landen im Zielordner."
   },
   "sendPage": {
     "calculatingChecksum": "Berechne Prüfsumme ({curr} / {n})",
@@ -503,5 +504,16 @@
     "sActionUseCameraHint": "Kamera benutzen",
     "sNameDurationLabel": "Dauer",
     "sUnitAssetCountLabel": "Anzahl"
+  },
+  "onboarding": {
+    "localNetwork": {
+      "title": "Berechtigung „Geräte in der Nähe“",
+      "description": "LanSlide benötigt die Berechtigung „Geräte in der Nähe“, um andere Geräte in deinem lokalen Netzwerk zu finden.",
+      "bulletDiscovery": "Nearby-Geräte automatisch über WLAN / lokales Netzwerk erkennen",
+      "bulletTransfer": "Dateien direkt zwischen Geräten senden und empfangen — ohne Internet",
+      "bulletPrivacy": "Nichts verlässt dein lokales Netzwerk; es werden keine Daten gesammelt",
+      "notNow": "Nicht jetzt",
+      "continueLabel": "Weiter"
+    }
   }
 }

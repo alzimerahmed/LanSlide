@@ -1,75 +1,132 @@
 package com.alzimerahmed.lanslide
 
 import android.annotation.SuppressLint
-import android.app.ActivityManager
 import android.app.PendingIntent
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
+import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.annotation.RequiresApi
 
 /**
- * Service used to launch the app as a quick tile from the top/status bar
- * @see https://dev.to/djsmk123/fluttercreate-custom-quick-title-android-only-3ehp
+ * Quick Settings tile that toggles LanSlide receive mode (the HTTP receive server).
+ *
+ * How it works:
+ * - The Dart side reports the actual server state to this service via the
+ *   "notifyServerState" platform channel method (see MainActivity), which persists
+ *   it in [PREFS_NAME]. This is the single source of truth for the tile icon.
+ * - On click, the tile flips the persisted state optimistically and launches
+ *   MainActivity with the [EXTRA_STOP_RECEIVE] extra. The Dart side consumes
+ *   that extra ("consumePendingStopReceive" channel method) and stops the server
+ *   after launch. Starting needs no extra: the app auto-starts the server from
+ *   settings on launch.
+ *
+ * Why launch the app instead of starting the server directly from the tile:
+ * the server runs inside the Flutter/Dart isolate together with the Rust core
+ * and its sync state (IsolateSyncServerStateAction must be published before the
+ * server starts). Bootstrapping that whole stack headless from a TileService in
+ * a separate process is fragile; launching the existing, singleTask activity is
+ * robust and works whether or not the app process is already alive (the app
+ * auto-starts the server from settings on launch, and the pending toggle is
+ * applied right after).
+ *
  * @see https://github.com/ProtonVPN/android-app/blob/2290b3c6b8b5ded339d69ec7c12e15acbb4b4b3d/app/src/main/java/com/protonvpn/android/components/QuickTileService.kt#L171
  */
 @RequiresApi(Build.VERSION_CODES.N)
 class QuickTileService : TileService() {
+
     override fun onClick() {
         super.onClick()
 
-        launchApp()
+        // Flip the persisted state optimistically; Dart reports the real state
+        // back via "notifyServerState" once it applied it.
+        val running = isServerRunning()
+        val newState = !running
+        setServerRunning(newState)
+        updateTile(newState)
+        // Starting the server needs no extra: the app auto-starts the server
+        // from settings on launch. Stopping requires the extra below.
+        launchAppWithToggle(stopReceive = !newState)
     }
-
-
 
     override fun onStartListening() {
         super.onStartListening()
-        setupIcon()
+        updateTile(isServerRunning())
     }
 
-    private fun setupIcon() {
-        // The tile is only available between `onStartListening` and
-        // `onStopListening`, so we ensure the tile is available
-        if (qsTile == null) {
-            return
-        }
+    private fun updateTile(running: Boolean) {
+        val tile = qsTile ?: return
+        tile.icon = Icon.createWithResource(this, R.mipmap.ic_launcher_quicktile_foreground)
+        tile.label = packageManager.getApplicationLabel(applicationInfo)
+        tile.state = if (running) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+        tile.updateTile()
+    }
 
-        qsTile.icon =
-            Icon.createWithResource(this, R.mipmap.ic_launcher_quicktile_foreground)
-        qsTile.label = packageManager.getApplicationLabel(application.applicationInfo)
-        qsTile.updateTile()
+    private fun isServerRunning(): Boolean {
+        return getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(PREF_SERVER_RUNNING, false)
+    }
+
+    private fun setServerRunning(running: Boolean) {
+        getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(PREF_SERVER_RUNNING, running)
+            .apply()
+    }
+
+    /// Called from Dart (MainActivity channel method "notifyServerState") whenever
+    /// the actual server state changes, so the tile always reflects reality.
+    companion object {
+        private const val PREFS_NAME = "lanslide_tile"
+        private const val PREF_SERVER_RUNNING = "server_running"
+        const val EXTRA_STOP_RECEIVE = "stop_receive"
+
+        fun setServerState(context: Context, running: Boolean) {
+            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(PREF_SERVER_RUNNING, running)
+                .apply()
+            // Ask the system to re-bind the tile so the icon refreshes even when
+            // the tile panel is currently visible.
+            TileService.requestListeningState(
+                context,
+                ComponentName(context, QuickTileService::class.java),
+            )
+        }
     }
 
     @SuppressLint("StartActivityAndCollapseDeprecated")
-    private fun launchApp() {
-        try{
+    private fun launchAppWithToggle(stopReceive: Boolean) {
+        try {
             val launchIntent = getLaunchIntent()
+            if (stopReceive) {
+                launchIntent.putExtra(EXTRA_STOP_RECEIVE, true)
+            }
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 // Starting from `Build.VERSION_CODES.UPSIDE_DOWN_CAKE` we can
                 // no longer start and collapse an Intent. We need to use a
                 // PendingIntent instead.
-                //
-                // The request code can be used to identify the pending intent
-                // request if needed. We don't, hence the 0.
-                //
-                // The launch intent used for the tile doesn't need any data
-                // thus we mark it as immutable to ensure maximal reuse.
                 startActivityAndCollapse(
-                    PendingIntent.getActivity(this, 0, launchIntent,
-                        PendingIntent.FLAG_IMMUTABLE)
+                    PendingIntent.getActivity(
+                        this,
+                        0,
+                        launchIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                    )
                 )
             } else {
                 // For any version below `Build.VERSION_CODES.UPSIDE_DOWN_CAKE`
                 // we can simply start the intent directly.
                 startActivityAndCollapse(launchIntent)
             }
-        }
-        catch (e:Exception){
-            Log.w(this.javaClass.toString(),"Exception $e")
+        } catch (e: Exception) {
+            Log.w(this.javaClass.toString(), "Exception $e")
         }
     }
 
@@ -86,16 +143,6 @@ class QuickTileService : TileService() {
             val dirtyIntent = MainActivity.createDefaultIntent(this)
             dirtyIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             dirtyIntent
-        }
-    }
-
-    private fun appIsAlreadyRunning(): Boolean {
-        val info = ActivityManager.RunningAppProcessInfo()
-        ActivityManager.getMyMemoryState(info)
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            info.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_CACHED
-        } else {
-            info.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND
         }
     }
 }

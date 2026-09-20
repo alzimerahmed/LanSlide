@@ -8,6 +8,144 @@
 
 part of 'android_channel.dart';
 
+class MediaStoreFileResultMapper extends ClassMapperBase<MediaStoreFileResult> {
+  MediaStoreFileResultMapper._();
+
+  static MediaStoreFileResultMapper? _instance;
+  static MediaStoreFileResultMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = MediaStoreFileResultMapper._());
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'MediaStoreFileResult';
+
+  static String _$uri(MediaStoreFileResult v) => v.uri;
+  static const Field<MediaStoreFileResult, String> _f$uri = Field('uri', _$uri);
+  static int _$fileDescriptor(MediaStoreFileResult v) => v.fileDescriptor;
+  static const Field<MediaStoreFileResult, int> _f$fileDescriptor = Field(
+    'fileDescriptor',
+    _$fileDescriptor,
+  );
+
+  @override
+  final MappableFields<MediaStoreFileResult> fields = const {
+    #uri: _f$uri,
+    #fileDescriptor: _f$fileDescriptor,
+  };
+
+  static MediaStoreFileResult _instantiate(DecodingData data) {
+    return MediaStoreFileResult(
+      uri: data.dec(_f$uri),
+      fileDescriptor: data.dec(_f$fileDescriptor),
+    );
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static MediaStoreFileResult fromJson(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<MediaStoreFileResult>(map);
+  }
+
+  static MediaStoreFileResult deserialize(String json) {
+    return ensureInitialized().decodeJson<MediaStoreFileResult>(json);
+  }
+}
+
+mixin MediaStoreFileResultMappable {
+  String serialize() {
+    return MediaStoreFileResultMapper.ensureInitialized()
+        .encodeJson<MediaStoreFileResult>(this as MediaStoreFileResult);
+  }
+
+  Map<String, dynamic> toJson() {
+    return MediaStoreFileResultMapper.ensureInitialized()
+        .encodeMap<MediaStoreFileResult>(this as MediaStoreFileResult);
+  }
+
+  MediaStoreFileResultCopyWith<
+    MediaStoreFileResult,
+    MediaStoreFileResult,
+    MediaStoreFileResult
+  >
+  get copyWith =>
+      _MediaStoreFileResultCopyWithImpl<
+        MediaStoreFileResult,
+        MediaStoreFileResult
+      >(this as MediaStoreFileResult, $identity, $identity);
+  @override
+  String toString() {
+    return MediaStoreFileResultMapper.ensureInitialized().stringifyValue(
+      this as MediaStoreFileResult,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return MediaStoreFileResultMapper.ensureInitialized().equalsValue(
+      this as MediaStoreFileResult,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return MediaStoreFileResultMapper.ensureInitialized().hashValue(
+      this as MediaStoreFileResult,
+    );
+  }
+}
+
+extension MediaStoreFileResultValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, MediaStoreFileResult, $Out> {
+  MediaStoreFileResultCopyWith<$R, MediaStoreFileResult, $Out>
+  get $asMediaStoreFileResult => $base.as(
+    (v, t, t2) => _MediaStoreFileResultCopyWithImpl<$R, $Out>(v, t, t2),
+  );
+}
+
+abstract class MediaStoreFileResultCopyWith<
+  $R,
+  $In extends MediaStoreFileResult,
+  $Out
+>
+    implements ClassCopyWith<$R, $In, $Out> {
+  $R call({String? uri, int? fileDescriptor});
+  MediaStoreFileResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
+}
+
+class _MediaStoreFileResultCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, MediaStoreFileResult, $Out>
+    implements MediaStoreFileResultCopyWith<$R, MediaStoreFileResult, $Out> {
+  _MediaStoreFileResultCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<MediaStoreFileResult> $mapper =
+      MediaStoreFileResultMapper.ensureInitialized();
+  @override
+  $R call({String? uri, int? fileDescriptor}) => $apply(
+    FieldCopyWithData({
+      if (uri != null) #uri: uri,
+      if (fileDescriptor != null) #fileDescriptor: fileDescriptor,
+    }),
+  );
+  @override
+  MediaStoreFileResult $make(CopyWithData data) => MediaStoreFileResult(
+    uri: data.get(#uri, or: $value.uri),
+    fileDescriptor: data.get(#fileDescriptor, or: $value.fileDescriptor),
+  );
+
+  @override
+  MediaStoreFileResultCopyWith<$R2, MediaStoreFileResult, $Out2>
+  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _MediaStoreFileResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
 class PickDirectoryResultMapper extends ClassMapperBase<PickDirectoryResult> {
   PickDirectoryResultMapper._();
 

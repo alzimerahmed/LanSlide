@@ -243,7 +243,8 @@
     "destination": "@:settingsTab.receive.destination",
     "appDirectory": "(LocalSend フォルダー)",
     "saveToGallery": "@:settingsTab.receive.saveToGallery",
-    "saveToGalleryOff": "ディレクトリーがあるため自動で無効になっています。"
+    "saveToGalleryOff": "ディレクトリーがあるため自動で無効になっています。",
+    "saveToGalleryHint": "写真と動画はギャラリーに保存され、その他のファイルは保存先フォルダーに保存されます。"
   },
   "sendPage": {
     "calculatingChecksum": "チェックサムを計算中 ({curr} / {n})",
@@ -503,5 +504,16 @@
     "sActionUseCameraHint": "カメラを使う",
     "sNameDurationLabel": "長さ",
     "sUnitAssetCountLabel": "個数"
+  },
+  "onboarding": {
+    "localNetwork": {
+      "title": "近くのデバイスの権限",
+      "description": "LanSlide が同じローカルネットワーク上の他のデバイスを検出するには、「近くのデバイス」権限が必要です。",
+      "bulletDiscovery": "Wi-Fi / ローカルネットワーク経由で近くのデバイスを自動検出",
+      "bulletTransfer": "デバイス間で直接ファイルを送受信 — インターネット不要",
+      "bulletPrivacy": "データがローカルネットワークの外に出ることはなく、収集もされません",
+      "notNow": "後で",
+      "continueLabel": "続行"
+    }
   }
 }

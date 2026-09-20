@@ -93,6 +93,8 @@ class TranslationsRu extends Translations with BaseTranslations<AppLocale, Trans
   late final _Translations$web$ru web = _Translations$web$ru._(_root);
   @override
   late final _Translations$assetPicker$ru assetPicker = _Translations$assetPicker$ru._(_root);
+  @override
+  late final _Translations$onboarding$ru onboarding = _Translations$onboarding$ru._(_root);
 }
 
 // Path: general
@@ -419,6 +421,8 @@ class _Translations$receiveOptionsPage$ru extends Translations$receiveOptionsPag
   String get saveToGallery => _root.settingsTab.receive.saveToGallery;
   @override
   String get saveToGalleryOff => 'Отключено автоматически, поскольку есть папки.';
+  @override
+  String get saveToGalleryHint => 'Фото и видео сохраняются в галерею; остальные файлы — в выбранную папку.';
 }
 
 // Path: sendPage
@@ -754,6 +758,17 @@ class _Translations$assetPicker$ru extends Translations$assetPicker$en {
   String get sNameDurationLabel => 'продолжительность';
   @override
   String get sUnitAssetCountLabel => 'количество';
+}
+
+// Path: onboarding
+class _Translations$onboarding$ru extends Translations$onboarding$en {
+  _Translations$onboarding$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+  final TranslationsRu _root; // ignore: unused_field
+
+  // Translations
+  @override
+  late final _Translations$onboarding$localNetwork$ru localNetwork = _Translations$onboarding$localNetwork$ru._(_root);
 }
 
 // Path: receiveTab.infoBox
@@ -1485,6 +1500,29 @@ class _Translations$dialogs$zoom$ru extends Translations$dialogs$zoom$en {
   // Translations
   @override
   String get title => 'URL-адрес';
+}
+
+// Path: onboarding.localNetwork
+class _Translations$onboarding$localNetwork$ru extends Translations$onboarding$localNetwork$en {
+  _Translations$onboarding$localNetwork$ru._(TranslationsRu root) : this._root = root, super.internal(root);
+
+  final TranslationsRu _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Разрешение «Устройства поблизости»';
+  @override
+  String get description => 'LanSlide требует разрешение «Устройства поблизости», чтобы находить другие устройства в локальной сети.';
+  @override
+  String get bulletDiscovery => 'Автоматически находить устройства поблизости через Wi-Fi / локальную сеть';
+  @override
+  String get bulletTransfer => 'Отправляйте и получайте файлы напрямую между устройствами — без интернета';
+  @override
+  String get bulletPrivacy => 'Ничего не покидает вашу локальную сеть; данные не собираются';
+  @override
+  String get notNow => 'Не сейчас';
+  @override
+  String get continueLabel => 'Продолжить';
 }
 
 // Path: settingsTab.general.brightnessOptions

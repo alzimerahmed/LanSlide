@@ -243,7 +243,8 @@
     "destination": "@:settingsTab.receive.destination",
     "appDirectory": "(pasta do LocalSend)",
     "saveToGallery": "@:settingsTab.receive.saveToGallery",
-    "saveToGalleryOff": "Desativada automaticamente pois há pastas."
+    "saveToGalleryOff": "Desativada automaticamente pois há pastas.",
+    "saveToGalleryHint": "Fotos e vídeos são salvos na sua galeria; os outros arquivos vão para a pasta de destino."
   },
   "sendPage": {
     "calculatingChecksum": "Calculando checksum ({curr} / {n})",
@@ -563,5 +564,16 @@
     "sActionUseCameraHint": "usar a câmera",
     "sNameDurationLabel": "duração",
     "sUnitAssetCountLabel": "contagem"
+  },
+  "onboarding": {
+    "localNetwork": {
+      "title": "Permissão de dispositivos próximos",
+      "description": "O LanSlide precisa da permissão «Dispositivos próximos» para encontrar outros dispositivos na sua rede local.",
+      "bulletDiscovery": "Descubra dispositivos próximos automaticamente via Wi-Fi / rede local",
+      "bulletTransfer": "Envie e receba arquivos diretamente entre dispositivos, sem internet",
+      "bulletPrivacy": "Nada sai da sua rede local; nenhum dado é coletado",
+      "notNow": "Agora não",
+      "continueLabel": "Continuar"
+    }
   }
 }

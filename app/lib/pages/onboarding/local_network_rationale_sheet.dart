@@ -16,7 +16,7 @@ class LocalNetworkRationaleSheet extends StatelessWidget {
 
   /// Shows the rationale and returns whether the user wants to proceed.
   static Future<bool> show(BuildContext context) async {
-    final result = await context.pushBottomSheet<bool>(() => const LocalNetworkRationaleSheet());
+    final result = await context.pushBottomSheet<bool, Widget>(() => const LocalNetworkRationaleSheet());
     return result ?? false;
   }
 

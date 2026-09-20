@@ -93,6 +93,8 @@ class TranslationsFr extends Translations with BaseTranslations<AppLocale, Trans
   late final _Translations$web$fr web = _Translations$web$fr._(_root);
   @override
   late final _Translations$assetPicker$fr assetPicker = _Translations$assetPicker$fr._(_root);
+  @override
+  late final _Translations$onboarding$fr onboarding = _Translations$onboarding$fr._(_root);
 }
 
 // Path: general
@@ -420,6 +422,9 @@ class _Translations$receiveOptionsPage$fr extends Translations$receiveOptionsPag
   String get saveToGallery => _root.settingsTab.receive.saveToGallery;
   @override
   String get saveToGalleryOff => 'Désactivé automatiquement car des dossiers sont présents.';
+  @override
+  String get saveToGalleryHint =>
+      'Les photos et les vidéos sont enregistrées dans votre galerie ; les autres fichiers vont dans le dossier de destination.';
 }
 
 // Path: sendPage
@@ -755,6 +760,17 @@ class _Translations$assetPicker$fr extends Translations$assetPicker$en {
   String get sNameDurationLabel => 'durée';
   @override
   String get sUnitAssetCountLabel => 'quantité';
+}
+
+// Path: onboarding
+class _Translations$onboarding$fr extends Translations$onboarding$en {
+  _Translations$onboarding$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+  final TranslationsFr _root; // ignore: unused_field
+
+  // Translations
+  @override
+  late final _Translations$onboarding$localNetwork$fr localNetwork = _Translations$onboarding$localNetwork$fr._(_root);
 }
 
 // Path: receiveTab.infoBox
@@ -1486,6 +1502,29 @@ class _Translations$dialogs$zoom$fr extends Translations$dialogs$zoom$en {
   // Translations
   @override
   String get title => 'URL';
+}
+
+// Path: onboarding.localNetwork
+class _Translations$onboarding$localNetwork$fr extends Translations$onboarding$localNetwork$en {
+  _Translations$onboarding$localNetwork$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+  final TranslationsFr _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => 'Autorisation « Appareils à proximité »';
+  @override
+  String get description => 'LanSlide a besoin de l’autorisation « Appareils à proximité » pour trouver d’autres appareils sur votre réseau local.';
+  @override
+  String get bulletDiscovery => 'Découvrez automatiquement les appareils à proximité via le Wi-Fi / le réseau local';
+  @override
+  String get bulletTransfer => 'Envoyez et recevez des fichiers directement entre appareils, sans Internet';
+  @override
+  String get bulletPrivacy => 'Rien ne quitte votre réseau local ; aucune donnée n’est collectée';
+  @override
+  String get notNow => 'Pas maintenant';
+  @override
+  String get continueLabel => 'Continuer';
 }
 
 // Path: settingsTab.general.brightnessOptions

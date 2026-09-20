@@ -243,7 +243,8 @@
     "destination": "@:settingsTab.receive.destination",
     "appDirectory": "(Папка LocalSend)",
     "saveToGallery": "@:settingsTab.receive.saveToGallery",
-    "saveToGalleryOff": "Отключено автоматически, поскольку есть папки."
+    "saveToGalleryOff": "Отключено автоматически, поскольку есть папки.",
+    "saveToGalleryHint": "Фото и видео сохраняются в галерею; остальные файлы — в выбранную папку."
   },
   "sendPage": {
     "calculatingChecksum": "Расчет контрольной суммы ({curr} / {n})",
@@ -503,5 +504,16 @@
     "sActionUseCameraHint": "использовать камеру",
     "sNameDurationLabel": "продолжительность",
     "sUnitAssetCountLabel": "количество"
+  },
+  "onboarding": {
+    "localNetwork": {
+      "title": "Разрешение «Устройства поблизости»",
+      "description": "LanSlide требует разрешение «Устройства поблизости», чтобы находить другие устройства в локальной сети.",
+      "bulletDiscovery": "Автоматически находить устройства поблизости через Wi-Fi / локальную сеть",
+      "bulletTransfer": "Отправляйте и получайте файлы напрямую между устройствами — без интернета",
+      "bulletPrivacy": "Ничего не покидает вашу локальную сеть; данные не собираются",
+      "notNow": "Не сейчас",
+      "continueLabel": "Продолжить"
+    }
   }
 }

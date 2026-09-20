@@ -95,6 +95,7 @@ const _createChecksums = 'ls_create_checksums';
 const _verifyChecksums = 'ls_verify_checksums';
 const _advancedSettingsKey = 'ls_advanced_settings';
 const _whatsNewKey = 'ls_whats_new';
+const _localNetworkRationaleShownKey = 'ls_local_network_rationale_shown';
 
 final persistenceProvider = Provider<PersistenceService>((ref) {
   throw Exception('persistenceProvider not initialized');
@@ -447,6 +448,16 @@ class PersistenceService {
 
   bool getAdvancedSettingsEnabled() {
     return _prefs.getBool(_advancedSettingsKey) ?? false;
+  }
+
+  /// Whether the explain-then-ask rationale for the local network permission
+  /// has been shown once (Android only). The OS dialog is only asked after it.
+  bool isLocalNetworkRationaleShown() {
+    return _prefs.getBool(_localNetworkRationaleShownKey) ?? false;
+  }
+
+  Future<void> setLocalNetworkRationaleShown() async {
+    await _prefs.setBool(_localNetworkRationaleShownKey, true);
   }
 
   Future<void> setAdvancedSettingsEnabled(bool isEnabled) async {

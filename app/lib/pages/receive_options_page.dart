@@ -98,6 +98,11 @@ class ReceiveOptionsPage extends StatelessWidget {
                           ],
                         ],
                       ),
+                      const SizedBox(height: 5),
+                      Text(
+                        t.receiveOptionsPage.saveToGalleryHint,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ],
                   ),
                 const SizedBox(height: 20),

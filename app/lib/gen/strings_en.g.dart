@@ -73,6 +73,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   late final Translations$tray$en tray = Translations$tray$en.internal(_root);
   late final Translations$web$en web = Translations$web$en.internal(_root);
   late final Translations$assetPicker$en assetPicker = Translations$assetPicker$en.internal(_root);
+  late final Translations$onboarding$en onboarding = Translations$onboarding$en.internal(_root);
 }
 
 // Path: general
@@ -476,6 +477,9 @@ class Translations$receiveOptionsPage$en {
 
   /// en: 'Turned off automatically because there are folders.'
   String get saveToGalleryOff => 'Turned off automatically because there are folders.';
+
+  /// en: 'Photos and videos are saved to your gallery; other files go to the destination folder.'
+  String get saveToGalleryHint => 'Photos and videos are saved to your gallery; other files go to the destination folder.';
 }
 
 // Path: sendPage
@@ -945,6 +949,16 @@ class Translations$assetPicker$en {
 
   /// en: 'count'
   String get sUnitAssetCountLabel => 'count';
+}
+
+// Path: onboarding
+class Translations$onboarding$en {
+  Translations$onboarding$en.internal(this._root);
+
+  final Translations _root; // ignore: unused_field
+
+  // Translations
+  late final Translations$onboarding$localNetwork$en localNetwork = Translations$onboarding$localNetwork$en.internal(_root);
 }
 
 // Path: receiveTab.infoBox
@@ -1825,6 +1839,36 @@ class Translations$dialogs$zoom$en {
 
   /// en: 'URL'
   String get title => 'URL';
+}
+
+// Path: onboarding.localNetwork
+class Translations$onboarding$localNetwork$en {
+  Translations$onboarding$localNetwork$en.internal(this._root);
+
+  final Translations _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Nearby devices permission'
+  String get title => 'Nearby devices permission';
+
+  /// en: 'LanSlide needs the "Nearby devices" permission to find other devices on your local network.'
+  String get description => 'LanSlide needs the "Nearby devices" permission to find other devices on your local network.';
+
+  /// en: 'Discover nearby devices automatically via Wi-Fi / local network'
+  String get bulletDiscovery => 'Discover nearby devices automatically via Wi-Fi / local network';
+
+  /// en: 'Send and receive files directly between devices — no internet required'
+  String get bulletTransfer => 'Send and receive files directly between devices — no internet required';
+
+  /// en: 'Nothing leaves your local network; no data is collected'
+  String get bulletPrivacy => 'Nothing leaves your local network; no data is collected';
+
+  /// en: 'Not now'
+  String get notNow => 'Not now';
+
+  /// en: 'Continue'
+  String get continueLabel => 'Continue';
 }
 
 // Path: settingsTab.general.brightnessOptions

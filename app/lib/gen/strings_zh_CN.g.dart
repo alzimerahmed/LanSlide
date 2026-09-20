@@ -95,6 +95,8 @@ class TranslationsZhCn extends Translations with BaseTranslations<AppLocale, Tra
   late final Translations$web$zh_CN web = Translations$web$zh_CN.internal(_root);
   @override
   late final Translations$assetPicker$zh_CN assetPicker = Translations$assetPicker$zh_CN.internal(_root);
+  @override
+  late final Translations$onboarding$zh_CN onboarding = Translations$onboarding$zh_CN.internal(_root);
 }
 
 // Path: general
@@ -420,6 +422,8 @@ class Translations$receiveOptionsPage$zh_CN extends Translations$receiveOptionsP
   String get saveToGallery => _root.settingsTab.receive.saveToGallery;
   @override
   String get saveToGalleryOff => '由于分享内容中存在文件夹，已自动关闭。';
+  @override
+  String get saveToGalleryHint => '照片和视频将保存到相册；其他文件保存到目标文件夹。';
 }
 
 // Path: sendPage
@@ -838,6 +842,17 @@ class Translations$assetPicker$zh_CN extends Translations$assetPicker$en {
   String get sNameDurationLabel => '时长';
   @override
   String get sUnitAssetCountLabel => '计数';
+}
+
+// Path: onboarding
+class Translations$onboarding$zh_CN extends Translations$onboarding$en {
+  Translations$onboarding$zh_CN.internal(TranslationsZhCn root) : this._root = root, super.internal(root);
+
+  final TranslationsZhCn _root; // ignore: unused_field
+
+  // Translations
+  @override
+  late final Translations$onboarding$localNetwork$zh_CN localNetwork = Translations$onboarding$localNetwork$zh_CN.internal(_root);
 }
 
 // Path: receiveTab.infoBox
@@ -1564,6 +1579,29 @@ class Translations$dialogs$zoom$zh_CN extends Translations$dialogs$zoom$en {
   // Translations
   @override
   String get title => 'URL';
+}
+
+// Path: onboarding.localNetwork
+class Translations$onboarding$localNetwork$zh_CN extends Translations$onboarding$localNetwork$en {
+  Translations$onboarding$localNetwork$zh_CN.internal(TranslationsZhCn root) : this._root = root, super.internal(root);
+
+  final TranslationsZhCn _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => '附近设备权限';
+  @override
+  String get description => 'LanSlide 需要“附近设备”权限来发现同一局域网内的其他设备。';
+  @override
+  String get bulletDiscovery => '通过 Wi-Fi / 局域网自动发现附近的设备';
+  @override
+  String get bulletTransfer => '在设备之间直接收发文件——无需互联网';
+  @override
+  String get bulletPrivacy => '数据不会离开你的局域网；不收集任何数据';
+  @override
+  String get notNow => '暂不';
+  @override
+  String get continueLabel => '继续';
 }
 
 // Path: settingsTab.general.brightnessOptions

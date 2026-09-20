@@ -93,6 +93,8 @@ class TranslationsJa extends Translations with BaseTranslations<AppLocale, Trans
   late final _Translations$web$ja web = _Translations$web$ja._(_root);
   @override
   late final _Translations$assetPicker$ja assetPicker = _Translations$assetPicker$ja._(_root);
+  @override
+  late final _Translations$onboarding$ja onboarding = _Translations$onboarding$ja._(_root);
 }
 
 // Path: general
@@ -418,6 +420,8 @@ class _Translations$receiveOptionsPage$ja extends Translations$receiveOptionsPag
   String get saveToGallery => _root.settingsTab.receive.saveToGallery;
   @override
   String get saveToGalleryOff => 'ディレクトリーがあるため自動で無効になっています。';
+  @override
+  String get saveToGalleryHint => '写真と動画はギャラリーに保存され、その他のファイルは保存先フォルダーに保存されます。';
 }
 
 // Path: sendPage
@@ -751,6 +755,17 @@ class _Translations$assetPicker$ja extends Translations$assetPicker$en {
   String get sNameDurationLabel => '長さ';
   @override
   String get sUnitAssetCountLabel => '個数';
+}
+
+// Path: onboarding
+class _Translations$onboarding$ja extends Translations$onboarding$en {
+  _Translations$onboarding$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+  final TranslationsJa _root; // ignore: unused_field
+
+  // Translations
+  @override
+  late final _Translations$onboarding$localNetwork$ja localNetwork = _Translations$onboarding$localNetwork$ja._(_root);
 }
 
 // Path: receiveTab.infoBox
@@ -1476,6 +1491,29 @@ class _Translations$dialogs$zoom$ja extends Translations$dialogs$zoom$en {
   // Translations
   @override
   String get title => 'URL';
+}
+
+// Path: onboarding.localNetwork
+class _Translations$onboarding$localNetwork$ja extends Translations$onboarding$localNetwork$en {
+  _Translations$onboarding$localNetwork$ja._(TranslationsJa root) : this._root = root, super.internal(root);
+
+  final TranslationsJa _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get title => '近くのデバイスの権限';
+  @override
+  String get description => 'LanSlide が同じローカルネットワーク上の他のデバイスを検出するには、「近くのデバイス」権限が必要です。';
+  @override
+  String get bulletDiscovery => 'Wi-Fi / ローカルネットワーク経由で近くのデバイスを自動検出';
+  @override
+  String get bulletTransfer => 'デバイス間で直接ファイルを送受信 — インターネット不要';
+  @override
+  String get bulletPrivacy => 'データがローカルネットワークの外に出ることはなく、収集もされません';
+  @override
+  String get notNow => '後で';
+  @override
+  String get continueLabel => '続行';
 }
 
 // Path: settingsTab.general.brightnessOptions

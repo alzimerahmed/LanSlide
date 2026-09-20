@@ -18,9 +18,15 @@
     <!-- Android 17+ blocks local network traffic without this runtime permission. -->
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
 
-    <!-- localsend: keep the app process alive while files are being received.
-         FOREGROUND_SERVICE and POST_NOTIFICATIONS come from the flutter_foreground_task manifest. -->
+    <!-- localsend: keep the app process alive while files are being received,
+         even under aggressive OEM battery killers (see https://dontkillmyapp.com/). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- localsend: lets the app ask the user for a battery-optimization exemption
+         via ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS (Task 3.17). -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!-- Android TV -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
@@ -88,10 +94,11 @@
             </intent-filter>
         </service>
 
-        <!-- Foreground service showing the receive progress.
-             Warning: the name is defined by flutter_foreground_task and must not be changed. -->
+        <!-- Foreground service keeping the receive server alive in the background
+             (Task 3.17). Started/stopped from Dart via the platform channel when
+             the HTTP server starts/stops. -->
         <service
-            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+            android:name=".ReceiveForegroundService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
 

@@ -10,6 +10,7 @@ import 'package:localsend_app/config/refena.dart';
 import 'package:localsend_app/config/theme.dart';
 import 'package:localsend_app/pages/home_page.dart';
 import 'package:localsend_app/pages/home_page_controller.dart';
+import 'package:localsend_app/pages/onboarding/local_network_rationale_sheet.dart';
 import 'package:localsend_app/pages/whats_new_page.dart';
 import 'package:localsend_app/provider/animation_provider.dart';
 import 'package:localsend_app/provider/app_arguments_provider.dart';
@@ -195,8 +196,21 @@ Future<void> postInit(BuildContext context, Ref ref, bool appStart) async {
 
     // Android 17+ blocks multicast discovery and LAN connections until this permission is granted,
     // so ask before the server and discovery start.
-    final localNetworkGranted = await requestLocalNetworkPermissionAndroid();
-    if (!localNetworkGranted) {
+    // Explain-then-ask: the first time, show a rationale sheet before the OS dialog
+    // so the user knows why the permission is needed.
+    if (!ref.read(persistenceProvider).isLocalNetworkRationaleShown()) {
+      await ref.read(persistenceProvider).setLocalNetworkRationaleShown();
+      if (context.mounted) {
+        final proceed = await LocalNetworkRationaleSheet.show(context);
+        if (!proceed) {
+          _logger.warning('Local network permission not requested (user postponed). Discovery and transfers may not work.');
+          if (context.mounted) {
+            await context.pushBottomSheet(() => const LocalNetworkDialog());
+          }
+        }
+      }
+    }
+    if (!await requestLocalNetworkPermissionAndroid()) {
       _logger.warning('Local network permission denied. Discovery and transfers may not work.');
       if (context.mounted) {
         await context.pushBottomSheet(() => const LocalNetworkDialog());
@@ -209,6 +223,20 @@ Future<void> postInit(BuildContext context, Ref ref, bool appStart) async {
   } catch (e) {
     if (context.mounted) {
       context.showSnackBar(e.toString());
+    }
+  }
+
+  // Quick Settings tile (Task 3.11): the tile only asks to STOP receive via the
+  // "stop_receive" extra (starting is covered by the auto-start above).
+  if (checkPlatform([TargetPlatform.android])) {
+    setAndroidChannelHandler((call) async {
+      if (call.method == 'stopReceive') {
+        await ref.notifier(serverProvider).stopServer();
+      }
+      return null;
+    });
+    if (await consumePendingStopReceiveAndroid()) {
+      await ref.notifier(serverProvider).stopServer();
     }
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/model/cross_file.dart';
 import 'package:localsend_app/model/state/server/server_state.dart';
@@ -10,6 +11,7 @@ import 'package:localsend_app/provider/network/server/controller/send_controller
 import 'package:localsend_app/provider/network/server/server_utils.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/util/alias_generator.dart';
+import 'package:localsend_app/util/native/channel/android_channel.dart';
 import 'package:localsend_app/util/native/web_pages_loader.dart';
 import 'package:localsend_isolates/constants.dart';
 import 'package:localsend_isolates/isolate.dart';
@@ -207,6 +209,9 @@ class ServerService extends Notifier<ServerState?> {
     } catch (e) {
       await subscription.cancel();
       _syncServerState(alias: alias, port: port, https: https, serverRunning: false, download: false);
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        await notifyServerStateAndroid(running: false);
+      }
       _logger.warning('Failed to start server', e);
       rethrow;
     }
@@ -223,6 +228,11 @@ class ServerService extends Notifier<ServerState?> {
 
     state = newServerState;
     _logger.info('Server started. (Port: $port, ${https ? 'HTTPS' : 'HTTP'} only)');
+
+    // Keep the Android QS tile and the receive foreground service in sync (Tasks 3.11/3.17).
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      await notifyServerStateAndroid(running: true);
+    }
     return newServerState;
   }
 
@@ -232,6 +242,11 @@ class ServerService extends Notifier<ServerState?> {
     _subscription = null;
     await ref.redux(parentIsolateProvider).dispatchAsync(IsolateHttpServerStopAction());
     state = null;
+
+    // Keep the Android QS tile and the receive foreground service in sync (Tasks 3.11/3.17).
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      await notifyServerStateAndroid(running: false);
+    }
     _logger.info('Server stopped.');
   }
 

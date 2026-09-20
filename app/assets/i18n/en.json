@@ -243,7 +243,8 @@
     "destination": "@:settingsTab.receive.destination",
     "appDirectory": "(LocalSend folder)",
     "saveToGallery": "@:settingsTab.receive.saveToGallery",
-    "saveToGalleryOff": "Turned off automatically because there are folders."
+    "saveToGalleryOff": "Turned off automatically because there are folders.",
+    "saveToGalleryHint": "Photos and videos are saved to your gallery; other files go to the destination folder."
   },
   "sendPage": {
     "calculatingChecksum": "Calculating checksum ({curr} / {n})",
@@ -573,5 +574,16 @@
     "sActionUseCameraHint": "use camera",
     "sNameDurationLabel": "duration",
     "sUnitAssetCountLabel": "count"
+  },
+  "onboarding": {
+    "localNetwork": {
+      "title": "Nearby devices permission",
+      "description": "LanSlide needs the \"Nearby devices\" permission to find other devices on your local network.",
+      "bulletDiscovery": "Discover nearby devices automatically via Wi-Fi / local network",
+      "bulletTransfer": "Send and receive files directly between devices — no internet required",
+      "bulletPrivacy": "Nothing leaves your local network; no data is collected",
+      "notNow": "Not now",
+      "continueLabel": "Continue"
+    }
   }
 }

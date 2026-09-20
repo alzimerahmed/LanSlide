@@ -44,7 +44,19 @@ class MainActivity : FlutterActivity() {
     private val pendingShareIntents = mutableListOf<Intent>()
     private var shareIntentReady = false
 
+    /// Set when the Quick Settings tile launched the app with the toggle extra.
+    /// The Dart side consumes it via the "consumePendingStopReceive" channel
+    /// method once its server provider is ready, then starts/stops the server.
+    private var pendingStopReceive = false
+
+    private fun captureStopReceive(intent: Intent?) {
+        if (intent?.getBooleanExtra(QuickTileService.EXTRA_STOP_RECEIVE, false) == true) {
+            pendingStopReceive = true
+        }
+    }
+
     override fun onNewIntent(intent: Intent) {
+        captureStopReceive(intent)
         if (!shareIntentReady && (intent.action == Intent.ACTION_SEND || intent.action == Intent.ACTION_SEND_MULTIPLE)) {
             pendingShareIntents.add(intent)
             return
@@ -75,6 +87,7 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        captureStopReceive(intent)
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CHANNEL
@@ -135,6 +148,33 @@ class MainActivity : FlutterActivity() {
                     }
                 }
 
+                "notifyServerState" -> {
+                    // Dart reports the actual receive-server state; keeps the
+                    // Quick Settings tile icon in sync.
+                    val running = call.argument<Boolean>("running") ?: false
+                    QuickTileService.setServerState(this, running)
+                    if (running) {
+                        ReceiveForegroundService.start(this)
+                    } else {
+                        ReceiveForegroundService.stop(this)
+                    }
+                    result.success(null)
+                }
+
+                "consumePendingStopReceive" -> {
+                    result.success(pendingStopReceive)
+                    pendingStopReceive = false
+                }
+
+                "isIgnoringBatteryOptimizations" -> {
+                    result.success(isIgnoringBatteryOptimizations())
+                }
+
+                "requestIgnoreBatteryOptimizations" -> {
+                    requestIgnoreBatteryOptimizations()
+                    result.success(null)
+                }
+
                 else -> result.notImplemented()
             }
         }
@@ -146,6 +186,31 @@ class MainActivity : FlutterActivity() {
             return true
         }
         return checkSelfPermission(PERMISSION_ACCESS_LOCAL_NETWORK) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun isIgnoringBatteryOptimizations(): Boolean {
+        val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+        return pm.isIgnoringBatteryOptimizations(packageName)
+    }
+
+    /// Opens the system dialog asking the user to exempt LanSlide from battery
+    /// optimization (Doze / OEM app killers). Requires the
+    /// REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission declared in the manifest.
+    private fun requestIgnoreBatteryOptimizations() {
+        try {
+            val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                data = Uri.parse("package:$packageName")
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            // Some OEM ROMs remove the direct-request action; fall back to the
+            // general battery optimization list.
+            try {
+                startActivity(Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            } catch (e2: Exception) {
+                android.util.Log.w("MainActivity", "Could not open battery optimization settings", e2)
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
