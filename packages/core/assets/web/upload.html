@@ -18,7 +18,7 @@
             max-width: 400px;
             margin: 15vh auto 0;
             padding: 1em;
-            border: 2px dashed transparent;
+            border: 2px dashed #B0BEC5;
             border-radius: 0.5em;
         }
 
@@ -60,6 +60,12 @@
         #drop-hint {
             margin-top: 0.75em;
             color: #616161;
+            cursor: pointer;
+        }
+
+        #drop-hint:hover {
+            color: #00796B;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -341,6 +347,9 @@
     function init() {
       var fileInput = document.getElementById('file-input');
       document.getElementById('upload-button').onclick = function () {
+        fileInput.click();
+      };
+      document.getElementById('drop-hint').onclick = function () {
         fileInput.click();
       };
       fileInput.onchange = function () {
