@@ -36,7 +36,7 @@ jobs:
 
       # APK
       - name: Download apk file
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: apk-result
           path: apk-result
