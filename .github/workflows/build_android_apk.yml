@@ -2,6 +2,15 @@ name: Build Android APK
 
 on:
   workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
   workflow_call:
 
 env:
@@ -26,26 +35,30 @@ jobs:
   build_apk:
     needs: build
     runs-on: ubuntu-22.04
+    env:
+      # Release mode is used when called from release.yml; dispatch defaults to debug.
+      BUILD_TYPE: ${{ inputs.build_type || 'release' }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-
-      - name: Remove proprietary dependencies
-        run: sh support/scripts/remove_proprietary_dependencies.sh
 
       - name: Copy files to env.APK_BUILD_DIR
         run: |
           mkdir -p $APK_BUILD_DIR
           cp -r . $APK_BUILD_DIR
 
+      # Release signing secrets are only required for release builds.
+      # LanSlide is FOSS-only, so proprietary deps are already stripped in-tree.
       - name: Decode key.properties file
+        if: env.BUILD_TYPE == 'release'
         working-directory: ${{ env.APK_BUILD_DIR }}
         env:
           ENCODED_STRING: ${{ secrets.ANDROID_KEY_PROPERTIES }}
         run: echo $ENCODED_STRING | base64 -di > app/android/key.properties
 
       - name: Decode android-keystore.jks file
+        if: env.BUILD_TYPE == 'release'
         working-directory: ${{ env.APK_BUILD_DIR }}
         env:
           ENCODED_STRING: ${{ secrets.ANDROID_KEY_STORE }}
@@ -77,13 +90,18 @@ jobs:
 
       - name: Build APK
         working-directory: ${{ env.APK_BUILD_DIR }}/app
-        run: flutter build apk --split-per-abi
+        run: |
+          if [ "$BUILD_TYPE" = "release" ]; then
+            flutter build apk --release --split-per-abi
+          else
+            flutter build apk --debug --split-per-abi
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v6
         with:
           name: apk-result
           path: |
-            ${{ env.APK_BUILD_DIR }}/app/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-            ${{ env.APK_BUILD_DIR }}/app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            ${{ env.APK_BUILD_DIR }}/app/build/app/outputs/flutter-apk/app-x86_64-release.apk
+            ${{ env.APK_BUILD_DIR }}/app/build/app/outputs/flutter-apk/app-armeabi-v7a-*.apk
+            ${{ env.APK_BUILD_DIR }}/app/build/app/outputs/flutter-apk/app-arm64-v8a-*.apk
+            ${{ env.APK_BUILD_DIR }}/app/build/app/outputs/flutter-apk/app-x86_64-*.apk
