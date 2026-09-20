@@ -53,6 +53,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
   late final Translations$troubleshootPage$en troubleshootPage = Translations$troubleshootPage$en.internal(_root);
   late final Translations$networkInterfacesPage$en networkInterfacesPage = Translations$networkInterfacesPage$en.internal(_root);
   late final Translations$receiveHistoryPage$en receiveHistoryPage = Translations$receiveHistoryPage$en.internal(_root);
+  late final Translations$trustedDevicesPage$en trustedDevicesPage = Translations$trustedDevicesPage$en.internal(_root);
+  late final Translations$transferHistoryPage$en transferHistoryPage = Translations$transferHistoryPage$en.internal(_root);
   late final Translations$apkPickerPage$en apkPickerPage = Translations$apkPickerPage$en.internal(_root);
   late final Translations$selectedFilesPage$en selectedFilesPage = Translations$selectedFilesPage$en.internal(_root);
   late final Translations$deviceDetailsPage$en deviceDetailsPage = Translations$deviceDetailsPage$en.internal(_root);
@@ -353,6 +355,66 @@ class Translations$receiveHistoryPage$en {
   String get empty => 'The history is empty.';
 
   late final Translations$receiveHistoryPage$entryActions$en entryActions = Translations$receiveHistoryPage$entryActions$en.internal(_root);
+}
+
+// Path: trustedDevicesPage
+class Translations$trustedDevicesPage$en {
+  Translations$trustedDevicesPage$en.internal(this._root);
+
+  final Translations _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Trusted devices'
+  String get title => 'Trusted devices';
+
+  /// en: 'Trusted devices are identified by their certificate fingerprint. Devices with "Always accept" enabled are accepted automatically without showing the receive dialog.'
+  String get info =>
+      'Trusted devices are identified by their certificate fingerprint. Devices with "Always accept" enabled are accepted automatically without showing the receive dialog.';
+
+  /// en: 'Add from known devices'
+  String get addFromKnownPeers => 'Add from known devices';
+
+  /// en: 'Select a device'
+  String get addFromPeers => 'Select a device';
+
+  /// en: 'Always accept'
+  String get alwaysAccept => 'Always accept';
+
+  /// en: 'No trusted devices yet.'
+  String get empty => 'No trusted devices yet.';
+
+  /// en: 'No known devices found. Discover devices first or add them to favorites.'
+  String get noKnownPeers => 'No known devices found. Discover devices first or add them to favorites.';
+}
+
+// Path: transferHistoryPage
+class Translations$transferHistoryPage$en {
+  Translations$transferHistoryPage$en.internal(this._root);
+
+  final Translations _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Transfer history'
+  String get title => 'Transfer history';
+
+  /// en: 'Delete history'
+  String get deleteHistory => 'Delete history';
+
+  /// en: 'The history is empty.'
+  String get empty => 'The history is empty.';
+
+  /// en: 'Resend to this device'
+  String get resend => 'Resend to this device';
+
+  /// en: 'The files are no longer available or the device address is unknown.'
+  String get resendUnavailable => 'The files are no longer available or the device address is unknown.';
+
+  /// en: 'Skipped missing files: {files}'
+  String resendSkipped({required Object files}) => 'Skipped missing files: ${files}';
+
+  late final Translations$transferHistoryPage$status$en status = Translations$transferHistoryPage$status$en.internal(_root);
 }
 
 // Path: apkPickerPage
@@ -1110,6 +1172,9 @@ class Translations$settingsTab$general$en {
 
   /// en: 'Animations'
   String get animations => 'Animations';
+
+  /// en: 'Transfer history'
+  String get transferHistory => 'Transfer history';
 }
 
 // Path: settingsTab.receive
@@ -1149,6 +1214,9 @@ class Translations$settingsTab$receive$en {
 
   /// en: 'Verify checksums when receiving files'
   String get verifyChecksums => 'Verify checksums when receiving files';
+
+  /// en: 'Trusted devices'
+  String get trustedDevices => 'Trusted devices';
 }
 
 // Path: settingsTab.send
@@ -1321,6 +1389,27 @@ class Translations$receiveHistoryPage$entryActions$en {
 
   /// en: 'Delete from history'
   String get deleteFromHistory => 'Delete from history';
+}
+
+// Path: transferHistoryPage.status
+class Translations$transferHistoryPage$status$en {
+  Translations$transferHistoryPage$status$en.internal(this._root);
+
+  final Translations _root; // ignore: unused_field
+
+  // Translations
+
+  /// en: 'Completed'
+  String get completed => 'Completed';
+
+  /// en: 'Failed'
+  String get failed => 'Failed';
+
+  /// en: 'Canceled'
+  String get canceled => 'Canceled';
+
+  /// en: 'Declined'
+  String get declined => 'Declined';
 }
 
 // Path: deviceDetailsPage.info

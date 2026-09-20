@@ -9,7 +9,9 @@ import 'package:localsend_app/pages/about/about_page.dart';
 import 'package:localsend_app/pages/changelog_page.dart';
 import 'package:localsend_app/pages/donation/donation_page.dart';
 import 'package:localsend_app/pages/settings/network_interfaces_page.dart';
+import 'package:localsend_app/pages/settings/trusted_devices_page.dart';
 import 'package:localsend_app/pages/tabs/settings_tab_controller.dart';
+import 'package:localsend_app/pages/transfer_history_page.dart';
 import 'package:localsend_app/provider/network/server/server_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
 import 'package:localsend_app/provider/version_provider.dart';
@@ -145,6 +147,13 @@ class SettingsTab extends StatelessWidget {
                     await ref.notifier(settingsProvider).setEnableAnimations(b);
                   },
                 ),
+                _ButtonEntry(
+                  label: t.settingsTab.general.transferHistory,
+                  buttonLabel: t.general.open,
+                  onTap: () async {
+                    await context.push(() => const TransferHistoryPage());
+                  },
+                ),
               ],
             ),
             _SettingsSection(
@@ -272,6 +281,13 @@ class SettingsTab extends StatelessWidget {
                       }
                     },
                   ),
+                _ButtonEntry(
+                  label: t.settingsTab.receive.trustedDevices,
+                  buttonLabel: t.general.open,
+                  onTap: () async {
+                    await context.push(() => const TrustedDevicesPage());
+                  },
+                ),
               ],
             ),
             if (vm.advanced)

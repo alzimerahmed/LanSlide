@@ -9,6 +9,8 @@ import 'package:localsend_app/model/persistence/color_mode.dart';
 import 'package:localsend_app/model/persistence/favorite_device.dart';
 import 'package:localsend_app/model/persistence/quick_save_mode.dart';
 import 'package:localsend_app/model/persistence/receive_history_entry.dart';
+import 'package:localsend_app/model/persistence/transfer_history_entry.dart';
+import 'package:localsend_app/model/persistence/trusted_device.dart';
 import 'package:localsend_app/model/send_mode.dart';
 import 'package:localsend_app/provider/window_dimensions_provider.dart';
 import 'package:localsend_app/util/alias_generator.dart';
@@ -57,6 +59,12 @@ const _receiveHistory = 'ls_receive_history';
 
 // Favorites
 const _favorites = 'ls_favorites';
+
+// Trusted devices (fingerprint allowlist)
+const _trustedDevices = 'ls_trusted_devices';
+
+// Unified transfer history (sent + received)
+const _transferHistory = 'ls_transfer_history';
 
 // App Window Offset and Size info
 const _windowOffsetX = 'ls_window_offset_x';
@@ -271,6 +279,26 @@ class PersistenceService {
   Future<void> setFavorites(List<FavoriteDevice> entries) async {
     final favoritesRaw = entries.map((entry) => jsonEncode(entry.toJson())).toList();
     await _prefs.setStringList(_favorites, favoritesRaw);
+  }
+
+  List<TrustedDevice> getTrustedDevices() {
+    final raw = _prefs.getStringList(_trustedDevices) ?? [];
+    return raw.map((entry) => TrustedDevice.fromJson(jsonDecode(entry))).toList();
+  }
+
+  Future<void> setTrustedDevices(List<TrustedDevice> entries) async {
+    final raw = entries.map((entry) => jsonEncode(entry.toJson())).toList();
+    await _prefs.setStringList(_trustedDevices, raw);
+  }
+
+  List<TransferHistoryEntry> getTransferHistory() {
+    final raw = _prefs.getStringList(_transferHistory) ?? [];
+    return raw.map((entry) => TransferHistoryEntry.fromJson(jsonDecode(entry))).toList();
+  }
+
+  Future<void> setTransferHistory(List<TransferHistoryEntry> entries) async {
+    final raw = entries.map((entry) => jsonEncode(entry.toJson())).toList();
+    await _prefs.setStringList(_transferHistory, raw);
   }
 
   String getShowToken() {

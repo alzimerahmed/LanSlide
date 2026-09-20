@@ -110,7 +110,8 @@
       "launchAtStartup": "Autostart after login",
       "launchMinimized": "Autostart: Start hidden",
       "showInContextMenu": "Show LocalSend in context menu",
-      "animations": "Animations"
+      "animations": "Animations",
+      "transferHistory": "Transfer history"
     },
     "receive": {
       "title": "Receive",
@@ -122,7 +123,8 @@
       "downloads": "(Downloads)",
       "saveToGallery": "Save media to gallery",
       "saveToHistory": "Save to history",
-      "verifyChecksums": "Verify checksums when receiving files"
+      "verifyChecksums": "Verify checksums when receiving files",
+      "trustedDevices": "Trusted devices"
     },
     "send": {
       "title": "Send",
@@ -195,6 +197,29 @@
       "showInFolder": "Show in folder",
       "info": "Information",
       "deleteFromHistory": "Delete from history"
+    }
+  },
+  "trustedDevicesPage": {
+    "title": "Trusted devices",
+    "info": "Trusted devices are identified by their certificate fingerprint. Devices with \"Always accept\" enabled are accepted automatically without showing the receive dialog.",
+    "addFromKnownPeers": "Add from known devices",
+    "addFromPeers": "Select a device",
+    "alwaysAccept": "Always accept",
+    "empty": "No trusted devices yet.",
+    "noKnownPeers": "No known devices found. Discover devices first or add them to favorites."
+  },
+  "transferHistoryPage": {
+    "title": "Transfer history",
+    "deleteHistory": "Delete history",
+    "empty": "The history is empty.",
+    "resend": "Resend to this device",
+    "resendUnavailable": "The files are no longer available or the device address is unknown.",
+    "resendSkipped": "Skipped missing files: {files}",
+    "status": {
+      "completed": "Completed",
+      "failed": "Failed",
+      "canceled": "Canceled",
+      "declined": "Declined"
     }
   },
   "apkPickerPage": {

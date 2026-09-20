@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:localsend_app/model/persistence/transfer_history_entry.dart';
+import 'package:localsend_app/model/persistence/trusted_device.dart';
 import 'package:localsend_app/model/state/server/receive_session_state.dart';
 import 'package:localsend_app/model/state/server/receiving_file.dart';
 import 'package:localsend_app/pages/home_page.dart';
@@ -22,6 +24,8 @@ import 'package:localsend_app/provider/security_provider.dart';
 import 'package:localsend_app/provider/selection/selected_receiving_files_provider.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
 import 'package:localsend_app/provider/settings_provider.dart';
+import 'package:localsend_app/provider/transfer_history_provider.dart';
+import 'package:localsend_app/provider/trusted_devices_provider.dart';
 import 'package:localsend_app/util/native/directories.dart';
 import 'package:localsend_app/util/native/platform_check.dart';
 import 'package:localsend_app/util/native/tray_helper.dart';
@@ -136,6 +140,16 @@ class ReceiveController {
     }
     if (server.getState().webUpload && settings.receiveViaLinkAutoAccept && server.getState().session?.message == null) {
       // The upload page (receive via link) is being served and requests should be accepted automatically.
+      quickSave = true;
+    }
+    // Only trust certificate-derived fingerprints: event.info.fingerprint is
+    // self-reported JSON and would let any peer spoof a trusted device when
+    // encryption is disabled.
+    if (server.getState().session?.message == null &&
+        event.certFingerprint != null &&
+        TrustedDevice.shouldAutoAccept(server.ref.read(trustedDevicesProvider), senderFingerprint)) {
+      // The sender's certificate fingerprint is on the trusted devices allowlist
+      // with "always accept" enabled: auto-accept without the dialog.
       quickSave = true;
     }
 
@@ -415,6 +429,7 @@ class ReceiveController {
       // the session to stay open.
       bool quickSave = settings.quickSave && !hasError && server.getState().session?.message == null;
       final quickSaveFromFavorites = settings.quickSaveFromFavorites && !hasError && server.getState().session?.message == null;
+      await _recordReceiveHistory(server, hasError ? TransferStatus.failed : TransferStatus.completed);
       if (quickSaveFromFavorites) {
         final bool isFavorite = server.ref.read(favoritesProvider).any((e) => e.fingerprint == session.sender.fingerprint);
         if (isFavorite) {
@@ -622,6 +637,8 @@ class ReceiveController {
     }
 
     server.ref.redux(parentIsolateProvider).dispatch(IsolateHttpServerPrepareUploadDecisionAction(config: null));
+    // ignore: discarded_futures
+    _recordReceiveHistory(server, TransferStatus.declined);
     closeSession();
   }
 
@@ -697,6 +714,39 @@ class ReceiveController {
   }
 }
 
+/// Records a receive session in the unified transfer history.
+Future<void> _recordReceiveHistory(ServerUtils server, TransferStatus status) async {
+  final session = server.getStateOrNull()?.session;
+  if (session == null) {
+    return;
+  }
+
+  final entry = TransferHistoryEntry(
+    id: session.sessionId,
+    direction: TransferDirection.received,
+    status: status,
+    peerAlias: session.senderAlias,
+    peerFingerprint: session.sender.fingerprint,
+    peerIp: session.sender.ip,
+    peerPort: session.sender.port,
+    peerHttps: session.sender.https,
+    files: [
+      for (final file in session.files.values)
+        // desiredName is only set at accept time; fall back to the announced
+        // name so declined/canceled sessions still record their files.
+        TransferHistoryFile(
+          fileName: file.desiredName ?? file.file.fileName,
+          fileSize: file.file.size,
+          fileType: file.file.fileType,
+          path: file.path,
+        ),
+    ],
+    isMessage: session.message != null,
+    timestamp: DateTime.now().toUtc(),
+  );
+  await server.ref.redux(transferHistoryProvider).dispatchAsync(AddTransferHistoryEntryAction(entry));
+}
+
 void _cancelBySender(ServerUtils server) {
   final receiveSession = server.getStateOrNull()?.session;
   if (receiveSession == null) {
@@ -704,6 +754,8 @@ void _cancelBySender(ServerUtils server) {
   }
 
   TransferNotification.stop(receiveSession.sessionId);
+  // ignore: discarded_futures
+  _recordReceiveHistory(server, TransferStatus.canceled);
 
   if (receiveSession.status == SessionStatus.waiting) {
     // received cancel during accept/decline
