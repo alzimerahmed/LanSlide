@@ -45,7 +45,7 @@ Rust (in `packages/core`): `cargo test --features full`, `cargo clippy --feature
 - `PeerIp` includes IPv6 scope (`fe80::1%3`) — keep event ips dialable.
 - Sync isolate state (`IsolateSyncServerStateAction`) BEFORE starting the server.
 
-**Remote-first verification:** full gates on CI, not local. Local tiered: targeted `fvm flutter test <file>` / `fvm flutter analyze` while iterating → scoped checks before commit → CI before merge. Full local builds only if change touches build files/deps or on-device APK needed.
+**Remote-first verification:** full gates on CI, not local. Local tiered: targeted `fvm flutter test <file>` / `fvm flutter analyze` while iterating → scoped checks before commit → CI before merge. **Never run `fvm flutter build apk` locally while iterating** — the APK build is verified by CI (`build_android_apk.yml`) after push. Full local builds only if an APK must be installed on a device or the build system itself is being debugged.
 
 **IMPORTANT — small-batch local builds (mandatory):** Flutter+Rust toolchain is heavy. When local builds needed:
 - One task per invocation; scoped tests (`fvm flutter test test/unit/util/foo_test.dart`) > whole-suite runs while iterating.

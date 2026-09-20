@@ -22,3 +22,8 @@
 
 # Generated at build time by makepri (see support/scripts/compile_windows_msix_helper.ps1)
 /support/build/msix/content/resources.pri
+
+# Devin prompt system + per-project knowledge layer (private, never pushed)
+.devin/
+docs/*.md
+LandSlide icon.png

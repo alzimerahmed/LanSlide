@@ -312,7 +312,7 @@ class PersistenceService {
     final value = _prefs.getString(_customColorKey);
     final rgb = value == null ? null : int.tryParse(value, radix: 16);
     if (rgb == null) {
-      return Colors.teal;
+      return const Color(0xFF3F51B5);
     }
     return Color(0xff000000 | rgb);
   }
