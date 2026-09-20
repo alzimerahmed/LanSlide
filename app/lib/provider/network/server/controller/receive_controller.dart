@@ -715,9 +715,16 @@ class ReceiveController {
 }
 
 /// Records a receive session in the unified transfer history.
+///
+/// Note: this is a session-level log, separate from the legacy per-file
+/// [receiveHistoryProvider]. Both honor the "Save to history" setting.
 Future<void> _recordReceiveHistory(ServerUtils server, TransferStatus status) async {
   final session = server.getStateOrNull()?.session;
   if (session == null) {
+    return;
+  }
+
+  if (!server.ref.read(settingsProvider).saveToHistory) {
     return;
   }
 

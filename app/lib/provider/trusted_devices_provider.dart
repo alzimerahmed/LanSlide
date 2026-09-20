@@ -61,7 +61,7 @@ class UpdateTrustedDeviceAction extends AsyncReduxAction<TrustedDevicesService, 
 class RemoveTrustedDeviceAction extends AsyncReduxAction<TrustedDevicesService, List<TrustedDevice>> {
   final String fingerprint;
 
-  RemoveTrustedDeviceAction({required this.fingerprint});
+  RemoveTrustedDeviceAction(this.fingerprint);
 
   @override
   Future<List<TrustedDevice>> reduce() async {

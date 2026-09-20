@@ -553,6 +553,13 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
       return;
     }
 
+    // First terminal status wins: a declined session (403) must not be
+    // overwritten with "canceled" when [_finish] runs afterwards.
+    final alreadyRecorded = ref.read(transferHistoryProvider).any((e) => e.id == sessionId);
+    if (alreadyRecorded) {
+      return;
+    }
+
     final entry = TransferHistoryEntry(
       id: sessionId,
       direction: TransferDirection.sent,
@@ -571,6 +578,9 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
             path: file.path,
           ),
       ],
+      // Text messages are sent by embedding them into a text file's preview;
+      // the send session does not distinguish them, so they are logged as
+      // regular file transfers for now.
       isMessage: false,
       timestamp: DateTime.now().toUtc(),
     );

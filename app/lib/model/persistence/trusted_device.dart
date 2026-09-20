@@ -5,8 +5,9 @@ part 'trusted_device.mapper.dart';
 /// A device trusted by its certificate fingerprint.
 ///
 /// The fingerprint is the mTLS certificate fingerprint of the peer and is
-/// therefore not spoofable (unless encryption is disabled, in which case the
-/// self-reported fingerprint is used as fallback).
+/// therefore not spoofable. Auto-accept additionally requires the incoming
+/// event to carry a certificate-derived fingerprint (`event.certFingerprint`);
+/// the self-reported `info.fingerprint` is never trusted on its own.
 @MappableClass()
 class TrustedDevice with TrustedDeviceMappable {
   final String fingerprint;

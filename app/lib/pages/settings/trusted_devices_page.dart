@@ -16,10 +16,11 @@ class TrustedDevicesPage extends StatelessWidget {
     final favorites = context.read(favoritesProvider).where((f) => TrustedDevice.find(trusted, f.fingerprint) == null);
     final nearby = context.read(nearbyDevicesProvider).devices.values.where((d) => TrustedDevice.find(trusted, d.fingerprint) == null);
 
-    final candidates = <(String fingerprint, String alias)>[
-      for (final f in favorites) (f.fingerprint, f.alias),
-      for (final d in nearby) (d.fingerprint, d.alias),
-    ];
+    // Dedupe by fingerprint: a device can be both a favorite and nearby.
+    final candidates = <String, String>{
+      for (final f in favorites) f.fingerprint: f.alias,
+      for (final d in nearby) d.fingerprint: d.alias,
+    };
 
     if (!context.mounted) {
       return;
@@ -32,13 +33,13 @@ class TrustedDevicesPage extends StatelessWidget {
 
     final selected = await showDialog<(String, String)>(
       context: context,
-      builder: (_) => SimpleDialog(
+      builder: (dialogContext) => SimpleDialog(
         title: Text(t.trustedDevicesPage.addFromPeers),
         children: [
-          for (final (fingerprint, alias) in candidates)
+          for (final MapEntry(:key, :value) in candidates.entries)
             SimpleDialogOption(
-              onPressed: () => Navigator.of(context).pop((fingerprint, alias)),
-              child: Text(alias, overflow: TextOverflow.ellipsis),
+              onPressed: () => Navigator.of(dialogContext).pop((key, value)),
+              child: Text(value, overflow: TextOverflow.ellipsis),
             ),
         ],
       ),
@@ -113,7 +114,27 @@ class TrustedDevicesPage extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () async {
-                        await context.redux(trustedDevicesProvider).dispatchAsync(RemoveTrustedDeviceAction(fingerprint: device.fingerprint));
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) => AlertDialog(
+                            title: Text(t.trustedDevicesPage.removeTitle),
+                            content: Text(t.trustedDevicesPage.removeContent(alias: device.alias)),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(dialogContext).pop(false),
+                                child: Text(t.general.cancel),
+                              ),
+                              FilledButton(
+                                onPressed: () => Navigator.of(dialogContext).pop(true),
+                                child: Text(t.general.delete),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true) {
+                          // ignore: use_build_context_synchronously
+                          await context.redux(trustedDevicesProvider).dispatchAsync(RemoveTrustedDeviceAction(device.fingerprint));
+                        }
                       },
                       icon: const Icon(Icons.delete),
                     ),

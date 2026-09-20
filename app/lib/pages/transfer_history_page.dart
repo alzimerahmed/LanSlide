@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/model/cross_file.dart';
 import 'package:localsend_app/model/persistence/transfer_history_entry.dart';
+import 'package:localsend_app/provider/network/nearby_devices_provider.dart';
 import 'package:localsend_app/provider/network/send_provider.dart';
 import 'package:localsend_app/provider/transfer_history_provider.dart';
+import 'package:localsend_app/widget/dialogs/history_clear_dialog.dart';
 import 'package:localsend_app/widget/responsive_list_view.dart';
+import 'package:localsend_isolates/constants.dart';
 import 'package:localsend_isolates/model/device.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 
@@ -24,7 +27,8 @@ class TransferHistoryPage extends StatelessWidget {
     final files = <CrossFile>[];
     final skipped = <String>[];
     for (final file in entry.files) {
-      if (file.path == null || !File(file.path!).existsSync()) {
+      final path = file.path;
+      if (path == null || !await File(path).exists()) {
         skipped.add(file.fileName);
         continue;
       }
@@ -64,19 +68,32 @@ class TransferHistoryPage extends StatelessWidget {
       return;
     }
 
-    final target = Device(
-      signalingId: null,
-      ip: entry.peerIp,
-      version: '2.1',
-      port: entry.peerPort,
-      https: entry.peerHttps,
-      fingerprint: entry.peerFingerprint!,
-      alias: entry.peerAlias,
-      deviceModel: null,
-      deviceType: DeviceType.desktop,
-      download: true,
-      channels: const [],
-    );
+    if (!context.mounted) {
+      return;
+    }
+
+    // Prefer a fresh discovery match (current ip/port/https/version) over the
+    // possibly-stale address stored at record time.
+    final nearby = context.read(nearbyDevicesProvider).devices.values;
+    final discovered = nearby.where((d) => d.fingerprint == entry.peerFingerprint).firstOrNull;
+
+    final target =
+        discovered ??
+        Device(
+          signalingId: null,
+          ip: entry.peerIp,
+          version: protocolVersion,
+          port: entry.peerPort,
+          https: entry.peerHttps,
+          fingerprint: entry.peerFingerprint!,
+          alias: entry.peerAlias,
+          deviceModel: null,
+          // The fields below are not used by the v2 HTTP send path; they only
+          // satisfy the Device constructor.
+          deviceType: DeviceType.desktop,
+          download: true,
+          channels: const [],
+        );
 
     // Reuses the regular send flow (prepare request -> decision -> upload).
     unawaited(
@@ -110,7 +127,14 @@ class TransferHistoryPage extends StatelessWidget {
                   onPressed: entries.isEmpty
                       ? null
                       : () async {
-                          await context.redux(transferHistoryProvider).dispatchAsync(RemoveAllTransferHistoryEntriesAction());
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (_) => const HistoryClearDialog(),
+                          );
+                          if (confirmed == true) {
+                            // ignore: use_build_context_synchronously
+                            await context.redux(transferHistoryProvider).dispatchAsync(RemoveAllTransferHistoryEntriesAction());
+                          }
                         },
                   icon: const Icon(Icons.delete),
                   label: Text(t.transferHistoryPage.deleteHistory),
@@ -138,7 +162,7 @@ class TransferHistoryPage extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(
-                  '${entry.timestampString} - ${entry.peerAlias} - ${entry.statusLabel}',
+                  '${entry.timestampString} · ${entry.peerAlias} · ${entry.statusLabel}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -33,23 +33,8 @@ class TransferHistoryFile with TransferHistoryFileMappable {
 /// One entry per transfer session (not per file) in the unified transfer
 /// history, covering both directions.
 ///
-/// RESUME FEASIBILITY NOTE (task 3.15, investigate-only):
-/// Protocol v2 has no resume support. A partial-transfer resume would require:
-/// 1. packages/core: the `/api/localsend/v2/upload` handler would need to accept
-///    a `Range`/offset per file token and append to a partially written file
-///    instead of truncating; the prepare-upload response would need to report
-///    already-received byte ranges (e.g. a per-file `receivedBytes` field).
-///    This changes the v2 wire contract, which is locked by
-///    packages/core/tests/protocol_compat.rs — it would have to be a v3
-///    extension (or an opt-in header both sides negotiate).
-/// 2. The Rust server isolate writes files streaming; it would need to keep
-///    partial files and their byte offsets across sessions (persisted session
-///    state), plus checksum verification of the partial prefix.
-/// 3. The sender (send_provider.dart) would need to slice file reads from the
-///    resume offset and the UI would need per-file "resume/restart" affordances.
-/// Verdict: doable but it slips past v1 — it is a protocol-level change, not a
-/// Dart-side one, and would break wire compat with stock LocalSend peers if
-/// done inside v2.
+/// Partial-transfer resume is not feasible in protocol v2 — see the
+/// "Transfer resume feasibility" section in docs/research.md.
 @MappableClass()
 class TransferHistoryEntry with TransferHistoryEntryMappable {
   final String id;

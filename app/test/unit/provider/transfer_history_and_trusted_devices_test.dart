@@ -1,7 +1,12 @@
 import 'package:localsend_app/model/persistence/transfer_history_entry.dart';
 import 'package:localsend_app/model/persistence/trusted_device.dart';
+import 'package:localsend_app/provider/transfer_history_provider.dart';
 import 'package:localsend_isolates/model/file_type.dart';
+import 'package:mockito/mockito.dart';
+import 'package:refena_flutter/refena_flutter.dart';
 import 'package:test/test.dart';
+
+import '../../mocks.mocks.dart';
 
 void main() {
   group('TrustedDevice allowlist matching', () {
@@ -80,6 +85,75 @@ void main() {
       final restored = TransferHistoryEntry.fromJson(entry.toJson());
       expect(restored, entry);
       expect(restored.isMessage, isTrue);
+    });
+  });
+
+  group('TransferHistory reducers', () {
+    late MockPersistenceService persistence;
+
+    setUp(() {
+      persistence = MockPersistenceService();
+      when(persistence.getTransferHistory()).thenReturn([]);
+    });
+
+    TransferHistoryEntry makeEntry(String id, {TransferStatus status = TransferStatus.completed}) {
+      return TransferHistoryEntry(
+        id: id,
+        direction: TransferDirection.sent,
+        status: status,
+        peerAlias: 'Peer',
+        peerFingerprint: 'fp',
+        peerIp: '192.168.1.2',
+        peerPort: 53317,
+        peerHttps: true,
+        files: const [],
+        isMessage: false,
+        timestamp: DateTime.utc(2024),
+      );
+    }
+
+    test('add inserts newest first and dedupes by id', () async {
+      final service = ReduxNotifier.test(
+        redux: TransferHistoryService(persistence),
+        initialState: [makeEntry('1'), makeEntry('2')],
+      );
+
+      await service.dispatchAsync(AddTransferHistoryEntryAction(makeEntry('3')));
+      expect(service.state.map((e) => e.id), ['3', '1', '2']);
+
+      // Same id replaces the old entry instead of duplicating.
+      await service.dispatchAsync(AddTransferHistoryEntryAction(makeEntry('1', status: TransferStatus.failed)));
+      expect(service.state.map((e) => e.id), ['1', '3', '2']);
+      expect(service.state.first.status, TransferStatus.failed);
+      verify(persistence.setTransferHistory(argThat(anything))).called(2);
+    });
+
+    test('add caps the history at 100 entries', () async {
+      final service = ReduxNotifier.test(
+        redux: TransferHistoryService(persistence),
+        initialState: List.generate(100, (i) => makeEntry(i.toString())),
+      );
+
+      await service.dispatchAsync(AddTransferHistoryEntryAction(makeEntry('new')));
+
+      expect(service.state.length, 100);
+      expect(service.state.first.id, 'new');
+      expect(service.state.any((e) => e.id == '99'), isFalse); // oldest dropped
+    });
+
+    test('remove and removeAll persist', () async {
+      final service = ReduxNotifier.test(
+        redux: TransferHistoryService(persistence),
+        initialState: [makeEntry('1'), makeEntry('2')],
+      );
+
+      await service.dispatchAsync(RemoveTransferHistoryEntryAction('1'));
+      expect(service.state.map((e) => e.id), ['2']);
+      verify(persistence.setTransferHistory([makeEntry('2')])).called(1);
+
+      await service.dispatchAsync(RemoveAllTransferHistoryEntriesAction());
+      expect(service.state, isEmpty);
+      verify(persistence.setTransferHistory([])).called(1);
     });
   });
 }
